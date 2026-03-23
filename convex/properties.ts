@@ -20,11 +20,10 @@ export const getProperties = query({
     // Properties with no approvalStatus are visible by default (older listings)
     const visibleResults = results.filter(p => p.approvalStatus !== "rejected");
     
-    // Sort so featured comes first, while keeping descending order for the rest
+    // Default to sorting by creation time (latest first)
     const properties = visibleResults.sort((a, b) => {
-      if (a.isFeatured && !b.isFeatured) return -1;
-      if (!a.isFeatured && b.isFeatured) return 1;
-      return 0; 
+      // Primary sort: Creation time (latest first)
+      return b._creationTime - a._creationTime;
     });
 
     // Resolve storageIds to actual URLs for each property
@@ -73,6 +72,7 @@ export const createProperty = mutation({
     userId: v.optional(v.id("users")),
     transactionType: v.string(),
     propertyType: v.string(),
+    posterType: v.optional(v.string()),
     location: v.object({
       state: v.string(),
       city: v.string(),
@@ -81,31 +81,64 @@ export const createProperty = mutation({
       fullAddress: v.optional(v.string()),
       pinCode: v.string(),
       landmark: v.optional(v.string()),
+      // Connectivity
       metroDistance: v.optional(v.string()),
       schoolDistance: v.optional(v.string()),
       mallDistance: v.optional(v.string()),
       hospitalDistance: v.optional(v.string()),
     }),
     details: v.object({
+      category: v.optional(v.string()),
       bhk: v.string(),
       status: v.string(),
       builtUpArea: v.number(),
+      builtUpAreaUnit: v.optional(v.string()),
       carpetArea: v.optional(v.number()),
       floorNumber: v.optional(v.number()),
       totalFloors: v.optional(v.number()),
+      bathrooms: v.optional(v.number()),
+      balconies: v.optional(v.number()),
       furnishing: v.optional(v.string()),
       facing: v.optional(v.string()),
       parking: v.optional(v.string()),
       constructionYear: v.optional(v.number()),
+      ownershipType: v.optional(v.string()),
+      plotArea: v.optional(v.number()),
+      plotAreaUnit: v.optional(v.string()),
+      frontageWidth: v.optional(v.number()),
+      roadWidth: v.optional(v.number()),
       description: v.string(),
+      // Advanced types
+      commercialType: v.optional(v.string()),
+      commercialGrade: v.optional(v.string()),
+      commercialFurnishing: v.optional(v.string()),
+      ceilingHeight: v.optional(v.number()),
+      washrooms: v.optional(v.string()),
+      roomType: v.optional(v.string()),
+      acType: v.optional(v.string()),
+      bathroomType: v.optional(v.string()),
+      bedType: v.optional(v.string()),
+      hotelType: v.optional(v.string()),
+      starRating: v.optional(v.number()),
+      totalRooms: v.optional(v.number()),
     }),
     amenities: v.array(v.string()),
     photos: v.array(v.string()),
+    videos: v.optional(v.array(v.string())),
+    brochure: v.optional(v.string()),
+    externalVideos: v.optional(v.array(v.string())),
     pricing: v.object({
       expectedPrice: v.number(),
+      isPriceOnRequest: v.optional(v.boolean()),
+      pricingType: v.optional(v.string()),
       priceType: v.optional(v.string()),
       maintenance: v.optional(v.number()),
       tokenAmount: v.optional(v.number()),
+      negotiable: v.optional(v.boolean()),
+      availabilityDate: v.optional(v.string()),
+      pricePerDay: v.optional(v.number()),
+      pricePerMonth: v.optional(v.number()),
+      securityDeposit: v.optional(v.number()),
     }),
     contactDesc: v.object({
       name: v.string(),
@@ -114,6 +147,7 @@ export const createProperty = mutation({
       role: v.optional(v.string()),
       rera: v.optional(v.string()),
       contactTime: v.optional(v.string()),
+      preferredTime: v.optional(v.string()),
     })
   },
   handler: async (ctx, args) => {
@@ -165,12 +199,16 @@ export const createProperty = mutation({
       userId: resolvedUserId,
       transactionType: args.transactionType,
       propertyType: args.propertyType,
+      posterType: args.posterType,
       location: args.location,
       details: args.details,
       amenities: args.amenities,
       photos: args.photos,
       pricing: args.pricing,
       contactDesc: args.contactDesc,
+      videos: args.videos,
+      brochure: args.brochure,
+      externalVideos: args.externalVideos,
       isFeatured: isFeatured,
       approvalStatus: "pending",
     });

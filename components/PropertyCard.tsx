@@ -12,19 +12,31 @@ export default function PropertyCard({ property }: { property: any }) {
   return (
     <TouchableOpacity
       activeOpacity={0.9} 
-      className="bg-white rounded-2xl mb-5 shadow-card border border-gray-100 overflow-hidden mx-4"
+      className="bg-white rounded-lg-custom mb-5 shadow-card border border-gray-100 overflow-hidden mx-4"
       onPress={() => router.push(`/property/${p._id}`)}
     >
       {/* Property Image Header */}
-      <View className="relative h-48 w-full bg-gray-200">
+      <View className="relative h-48 w-full bg-gray-100">
         <Image 
-          source={{ uri: p.photos?.[0] || 'https://via.placeholder.com/800' }} 
-          className="w-full h-full" 
+          source={{ 
+            uri: (() => {
+              const photoData = p.photos;
+              if (!photoData || !photoData[0]) return 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+              
+              const raw = photoData[0];
+              const photoStr = (typeof raw === 'string') ? raw : (raw?.url || raw?.id || String(raw));
+              
+              if (photoStr.indexOf('http') === 0) return photoStr;
+              
+              return 'https://compassionate-mockingbird-459.convex.cloud/api/storage/' + photoStr;
+            })()
+          }} 
+          style={{ width: '100%', height: '100%' }}
           resizeMode="cover"
         />
         
         {/* Overlays */}
-        <View className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-sm flex-row items-center shadow-sm">
+        <View className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-sm-custom flex-row items-center shadow-standard">
           <FontAwesome5 name="camera" size={10} color="#2d2d2d" />
           <Text className="text-text text-[10px] font-inter-semibold ml-1">
             {p.photos?.length || 0}
@@ -36,7 +48,7 @@ export default function PropertyCard({ property }: { property: any }) {
         </TouchableOpacity>
 
         {p.isFeatured && (
-          <View className="absolute bottom-3 left-3 bg-primary px-2 py-1 rounded-sm shadow-sm">
+          <View className="absolute bottom-3 left-3 bg-primary px-2 py-1 rounded-sm-custom shadow-standard">
             <Text className="text-white text-[10px] font-poppins-semibold uppercase tracking-wider">Featured</Text>
           </View>
         )}
@@ -61,7 +73,7 @@ export default function PropertyCard({ property }: { property: any }) {
         </View>
 
         {/* Specs Grid (99acres style) */}
-        <View className="flex-row flex-wrap border border-border-light rounded-lg overflow-hidden mb-4">
+        <View className="flex-row flex-wrap border border-border-light rounded-sm-custom overflow-hidden mb-4">
           <View className="w-1/3 p-2 border-r border-border-light items-center justify-center bg-gray-50">
             <Text className="text-text-muted text-[10px] uppercase font-inter-medium mb-0.5">Built-up</Text>
             <Text className="text-dark text-xs font-inter-semibold">{p.details?.builtUpArea || 0} sqft</Text>

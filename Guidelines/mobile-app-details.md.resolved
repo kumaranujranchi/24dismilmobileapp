@@ -1,0 +1,45 @@
+# Mobile App Technical Details
+
+This document provides the technical context, backend architecture, and data structures required for the mobile app development.
+
+## Backend Architecture
+- **Platform:** Convex (convex.dev)
+- **Database:** Real-time document-store.
+- **Functions:** Convex Queries (read) and Mutations (write).
+
+## Core Entities (Schema)
+
+### 1. Properties (`properties`)
+The central entity for all real estate listings.
+- `transactionType`: (string) "Buy", "Rent", "Commercial".
+- `propertyType`: (string) e.g., "Apartment", "House", "Land".
+- `location`: (object) City, locality, and address details.
+- `pricing`: (object) Price, suffix (e.g., "Cr", "Lakh"), and maintenance details.
+- `amenities`: (array of strings) List of features.
+- `photos`: (array of objects) Images with `storageId`.
+- `approvalStatus`: (string) "pending", "approved", "rejected".
+
+### 2. Users (`users`)
+- `name`: (string) Full name.
+- `email`: (string) Contact email.
+- `subscriptionTier`: (string) "free", "premium", "agent".
+- `mobile`: (optional string) Contact number.
+- `isAdmin`: (optional boolean) Admin privileges.
+
+### 3. Leads (`leads`)
+Captured user inquiries for properties.
+- `propertyId`: (id) Reference to the property.
+- `ownerId`: (id) Reference to the seller/agent.
+- `inquirerName`: (string) Name of the interested buyer.
+- `inquirerPhone`: (string) Phone number of the interested buyer.
+
+## Key Features to Replicate
+1. **Property Search:** Advanced filtering by type, price, and location.
+2. **Property Posting:** Multi-step form for listing properties with photo uploads.
+3. **Dashboards:** Separate views for Users and Admins.
+4. **Real-time Updates:** Listings and leads should update in real-time using Convex's reactive nature.
+
+## Media Handling
+- Images and videos are stored in Convex File Storage.
+- Use `storageId` to fetch and display media.
+- External videos (Youtube/Vimeo) are stored as link strings.

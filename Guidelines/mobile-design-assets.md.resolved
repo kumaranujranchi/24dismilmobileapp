@@ -1,0 +1,47 @@
+# Mobile App Design Assets
+
+This document contains the design tokens and UI references to ensure the mobile app matches the web design perfectly.
+
+## Brand Identity
+
+### Colors
+| Name | Hex Code | Usage |
+| :--- | :--- | :--- |
+| **Primary** | `#e84118` | Main actions, branding, active states |
+| **Primary Dark** | `#c73410` | Hover states, pressed buttons |
+| **Primary Light** | `#ff6b4a` | Subtle accents, light backgrounds |
+| **Secondary** | `#f5a623` | Warnings, special highlights, accents |
+| **Dark** | `#1a1a2e` | Main headings, dark theme core |
+| **Dark 2** | `#16213e` | Secondary dark backgrounds |
+| **Text** | `#2d2d2d` | Primary body text |
+| **Text Muted** | `#6b7280` | Descriptions, helper text |
+| **Text Light** | `#9ca3af` | Placeholders, disabled states |
+| **Background** | `#f7f8fa` | Default app background |
+| **Success** | `#10b981` | Success states, verified badges |
+| **Warning** | `#f59e0b` | Alerts, attention-seeking elements |
+
+### Typography
+- **Headings (H1-H5):** `Poppins`, sans-serif (Weights: 400, 500, 600, 700, 800)
+- **Body Text:** `Inter`, sans-serif (Weights: 300, 400, 500, 600, 700)
+
+## Layout & Components
+
+### Spacing & Radius
+- **Base Radius:** `12px` (`--radius`)
+- **Small Radius:** `8px` (`--radius-sm`)
+- **Large Radius:** `20px` (`--radius-lg`)
+- **Container Max Width:** `1280px`
+
+### UI Tokens
+- **Shadow (Standard):** `0 4px 16px rgba(0, 0, 0, 0.1)`
+- **Shadow (Card):** `0 2px 12px rgba(0, 0, 0, 0.08)`
+- **Transition:** `all 0.3s ease`
+
+### Common Elements
+- **Badges:** Pill-shaped (20px radius), 11px font size, semi-bold.
+- **Buttons:** 14px font size, 10px 22px padding, 600 weight.
+- **Glassmorphism:** Use `backdrop-filter: blur(20px)` with semi-transparent white backgrounds (`rgba(255, 255, 255, 0.05)`) for premium overlays.
+
+## visual Reference
+- **Theme:** Modern, clean, Real Estate focused.
+- **Vibe:** Premium feel with subtle shadows and rounded corners.

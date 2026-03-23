@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!--
+      Expo Web uses a CSP header that can block development tooling (like
+      source-maps and module evaluation) when strict CSP is enforced.
+      Allowing 'unsafe-eval' here is common for local development.
+    -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-eval' 'unsafe-inline' data: blob:; style-src 'self' 'unsafe-inline' data: blob:; img-src 'self' data: blob:; connect-src 'self' ws: wss: http://localhost:8090 http://127.0.0.1:8090; font-src 'self' data:;" />
+
+    <title>Property Bazar App</title>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- Expo Web will inject the JS bundle here -->
+    <script type="module" src="./index.js"></script>
+  </body>
+</html>

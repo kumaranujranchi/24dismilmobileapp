@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
 
@@ -35,7 +36,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Load persisted token from device storage on boot
     const loadToken = async () => {
       try {
-        const storedToken = await SecureStore.getItemAsync(TOKEN_KEY);
+        let storedToken = null;
+        if (Platform.OS === 'web') {
+          // Force pure browser API
+          storedToken = typeof window !== 'undefined' ? window.localStorage.getItem(TOKEN_KEY) : null;
+        } else {
+          storedToken = await AsyncStorage.getItem(TOKEN_KEY);
+        }
+        
         if (storedToken) {
           setTokenState(storedToken);
         }
@@ -50,10 +58,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const setToken = async (newToken: string | null) => {
     try {
-      if (newToken) {
-        await SecureStore.setItemAsync(TOKEN_KEY, newToken);
+      if (Platform.OS === 'web') {
+        if (typeof window !== 'undefined') {
+          if (newToken) {
+            window.localStorage.setItem(TOKEN_KEY, newToken);
+          } else {
+            window.localStorage.removeItem(TOKEN_KEY);
+          }
+        }
       } else {
-        await SecureStore.deleteItemAsync(TOKEN_KEY);
+        if (newToken) {
+          await AsyncStorage.setItem(TOKEN_KEY, newToken);
+        } else {
+          await AsyncStorage.removeItem(TOKEN_KEY);
+        }
       }
       setTokenState(newToken);
     } catch (e) {

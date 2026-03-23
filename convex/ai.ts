@@ -95,3 +95,59 @@ RULES:
     }
   },
 });
+
+/**
+ * Rewrites property descriptions to make them professional, SEO-friendly, and engaging.
+ */
+export const rewriteDescription = action({
+  args: {
+    text: v.string(),
+    propertyType: v.string(),
+    locality: v.string(),
+    city: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const apiKey = process.env.SARVAM_API_KEY;
+    if (!apiKey) {
+      return { success: false, error: "AI is currently unavailable." };
+    }
+
+    try {
+      const systemPrompt = `You are a professional real estate copywriter in India. 
+Your task is to take a draft property description and rewrite it to be:
+1. Professional and engaging.
+2. Highlight location advantages (locality: ${args.locality}, city: ${args.city}).
+3. Use high-intent real estate keywords.
+4. Keep the tone premium yet grounded.
+5. If the input is in Hinglish or contains Hindi words, keep the flavor but make it more polished.
+6. Property Type: ${args.propertyType}.
+
+Return ONLY the rewritten description text. No other commentary or greetings.`;
+
+      const response = await fetch("https://api.sarvam.ai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "api-subscription-key": apiKey,
+        },
+        body: JSON.stringify({
+          model: "sarvam-m",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: `Rewrite this description: ${args.text}` }
+          ],
+        }),
+      });
+
+      if (!response.ok) throw new Error("API failed");
+
+      const data = await response.json();
+      const rewritten = data.choices[0]?.message?.content?.trim();
+      
+      return { success: true, text: rewritten };
+    } catch (e: any) {
+      console.error("AI Rewrite Error:", e);
+      return { success: false, error: e.message };
+    }
+  },
+});
