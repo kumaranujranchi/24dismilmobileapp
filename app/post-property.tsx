@@ -15,11 +15,13 @@ import { useAuth } from '../context/AuthContext';
 // ============================================================
 // CONSTANTS
 // ============================================================
-const PRIMARY = '#e84118';
-const DARK = '#1a1a2e';
-const MUTED = '#6b7280';
-const BORDER = '#e5e7eb';
-const BG = '#f8fafc';
+const PRIMARY = '#b12300';
+const DARK = '#2d2f31';
+const MUTED = '#5a5c5d';
+const BORDER = '#e1e2e5';
+const BG = '#f6f6f8';
+const SURFACE_LIGHT = '#ffffff';
+const SURFACE_DIM = '#f0f1f3';
 
 const AREA_UNITS = [
   'Square Foot', 'Square Yard (Gaj)', 'Square Meter', 'Acre', 'Hectare',
@@ -36,12 +38,12 @@ const AMENITY_GROUPS = [
 const PROP_TYPES = [
   { label: 'Apartment', icon: 'building' },
   { label: 'Villa / House', icon: 'home' },
-  { label: 'Plot / Land', icon: 'map' },
+  { label: 'Plot / Land', icon: 'map-marked-alt' },
   { label: 'Commercial', icon: 'store' },
-  { label: 'PG Room', icon: 'couch' },
+  { label: 'PG Room', icon: 'bed' },
   { label: 'Warehouse', icon: 'industry' },
   { label: 'Hotel / Resort', icon: 'hotel' },
-  { label: 'Lodge', icon: 'bed' },
+  { label: 'Lodge', icon: 'door-open' },
 ];
 
 const FACING = ['East','West','North','South','North-East','North-West','South-East','South-West'];
@@ -601,145 +603,400 @@ export default function PostPropertyScreen() {
     const label = opportunityScore > 70 ? 'Excellent' : opportunityScore > 40 ? 'Good' : 'Needs Work';
     
     return (
-      <View style={s.scoreContainer}>
-        <View style={[s.scoreRing, { borderColor: color }]}>
-          <Text style={[s.scoreValue, { color }]}>{opportunityScore}</Text>
-          <Text style={s.scoreMax}>/100</Text>
+      <View style={{ 
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        backgroundColor: '#fff', 
+        padding: 10, 
+        borderRadius: 40, 
+        borderWidth: 1, 
+        borderColor: '#e5e7eb',
+        shadowColor: '#000',
+        shadowOpacity: 0.03,
+        shadowRadius: 10,
+        elevation: 1,
+        minWidth: 150
+      }}>
+        <View style={{ 
+          width: 48, 
+          height: 48, 
+          borderRadius: 24, 
+          borderWidth: 1, 
+          borderColor: color, 
+          alignItems: 'center', 
+          justifyContent: 'center' 
+        }}>
+          <Text style={{ fontSize: 13, fontFamily: 'Poppins-Bold', color: '#000' }}>{opportunityScore}</Text>
+          <Text style={{ fontSize: 8, color: '#9ca3af', marginTop: -2 }}>/100</Text>
         </View>
-        <View style={{ flex: 1 }}>
-          <Text style={[s.scoreLabel, { color }]}>{label}</Text>
-          <Text style={s.scoreHint}>Opportunity Score</Text>
+        <View style={{ marginLeft: 10 }}>
+          <Text style={{ fontSize: 11, fontFamily: 'Poppins-Bold', color: '#ef4444' }}>Needs Work</Text>
+          <Text style={{ fontSize: 9, color: '#6b7280', fontFamily: 'Poppins-Medium' }}>Opportunity Score</Text>
         </View>
       </View>
     );
   };
 
-  const renderStepBar = () => (
-    <View style={s.stepHeader}>
-      <View style={s.stepRow}>
-        <View style={s.stepBar}>
-          {[1,2,3,4,5].map(n => (
-            <React.Fragment key={n}>
-              <View style={[s.dot, step >= n && s.dotOn]}>
-                {step > n
-                  ? <FontAwesome5 name="check" size={10} color="#fff" />
-                  : <Text style={[s.dotTxt, step >= n && { color: '#fff' }]}>{n}</Text>}
-              </View>
-              {n < 5 && <View style={[s.line, step > n && s.lineOn]} />}
-            </React.Fragment>
-          ))}
+  const renderStep2ScoreCard = () => (
+    <View style={{ 
+      backgroundColor: SURFACE_LIGHT, 
+      borderRadius: 16, 
+      padding: 24, 
+      marginBottom: 32, 
+      flexDirection: 'row', 
+      alignItems: 'center',
+      gap: 24,
+      shadowColor: '#2d2f31',
+      shadowOpacity: 0.06,
+      shadowRadius: 20,
+      elevation: 4,
+      marginHorizontal: 4
+    }}>
+      <View style={{ 
+        width: 96, 
+        height: 96, 
+        borderRadius: 48, 
+        borderWidth: 8, 
+        borderColor: '#e1e2e5', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        position: 'relative'
+      }}>
+        {/* Mocking the SVG Gauge with a thick border */}
+        <View style={{ 
+          position: 'absolute', 
+          width: 96, 
+          height: 96, 
+          borderRadius: 48, 
+          borderWidth: 8, 
+          borderColor: PRIMARY, 
+          borderLeftColor: 'transparent',
+          borderBottomColor: 'transparent',
+          transform: [{ rotate: '-45deg' }]
+        }} />
+        <View style={{ alignItems: 'center' }}>
+          <Text style={{ fontSize: 24, fontFamily: 'Poppins-Bold', color: DARK }}>{opportunityScore}</Text>
+          <Text style={{ fontSize: 10, color: MUTED, fontFamily: 'Poppins-Bold', textTransform: 'uppercase', letterSpacing: -0.5 }}>/ 100</Text>
         </View>
-      </View>
-      
-      <View style={s.stepInfoRow}>
-        <View style={{ flex: 1 }}>
-          <Text style={s.stepSub}>Step {step} of 5</Text>
-          <Text style={s.stepMain}>{LABELS[step - 1]}</Text>
-        </View>
-        {renderOpportunityScoreRing()}
       </View>
 
-      {scoreTips.length > 0 && step < 5 && (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.tipsContainer}>
-          <View style={s.tipsRowInner}>
-            {scoreTips.map((tip, i) => (
-              <View key={i} style={[s.tipItem, tip.highlight && s.tipItemActive]}>
-                <FontAwesome5 name={tip.icon} size={10} color={tip.highlight ? PRIMARY : MUTED} />
-                <Text style={[s.tipText, tip.highlight && { color: PRIMARY }]}>{tip.text}</Text>
-              </View>
-            ))}
+      <View style={{ flex: 1 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4, gap: 8 }}>
+          <Text style={{ fontSize: 18, fontFamily: 'Poppins-Bold', color: DARK }}>Opportunity Score</Text>
+          <View style={{ backgroundColor: '#fcdadd', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 12 }}>
+            <Text style={{ fontSize: 10, fontFamily: 'Poppins-Bold', color: '#a70138', textTransform: 'uppercase' }}>Needs Work</Text>
           </View>
-        </ScrollView>
-      )}
+        </View>
+        <Text style={{ fontSize: 14, color: MUTED, fontFamily: 'Poppins-Medium', marginBottom: 16, lineHeight: 20 }}>Higher scores lead to 3x faster buyer conversions.</Text>
+        
+        <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
+          <View style={{ backgroundColor: SURFACE_DIM, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <FontAwesome5 name="camera" size={14} color={PRIMARY} />
+            <Text style={{ fontSize: 12, fontFamily: 'Poppins-Bold', color: DARK }}>+25 pts for 5+ photos</Text>
+          </View>
+          <View style={{ backgroundColor: SURFACE_DIM, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <FontAwesome5 name="file-alt" size={14} color={PRIMARY} />
+            <Text style={{ fontSize: 12, fontFamily: 'Poppins-Bold', color: DARK }}>+15 pts for description</Text>
+          </View>
+        </View>
+      </View>
     </View>
   );
+
+  const renderStepBar = () => {
+    const percent = Math.min(100, (step - 1) * 20 + 20); // Each step is 20%
+    return (
+      <View style={{ backgroundColor: BG, paddingHorizontal: 24, paddingTop: 10, paddingBottom: 15 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 8 }}>
+          <Text style={{ fontSize: 13, color: MUTED, fontFamily: 'Inter-Medium', letterSpacing: 1.2 }}>STEP 0{step} OF 05</Text>
+          <Text style={{ fontSize: 18, fontFamily: 'Poppins-Bold', color: PRIMARY }}>{percent}% Complete</Text>
+        </View>
+        
+        {/* Progress Bar */}
+        <View style={{ height: 8, backgroundColor: BORDER, borderRadius: 4, overflow: 'hidden', marginBottom: 24 }}>
+          <View style={{ height: '100%', width: `${percent}%`, backgroundColor: PRIMARY }} />
+        </View>
+
+        <Text style={{ fontSize: 32, fontFamily: 'Poppins-Bold', color: DARK, marginBottom: 8 }}>{LABELS[step - 1]}</Text>
+      </View>
+    );
+  };
+
+  const renderScoreTips = () => {
+    if (scoreTips.length === 0 || step >= 3) return null;
+    if (step === 2) return renderStep2ScoreCard();
+    return (
+      <View style={{ paddingHorizontal: 20, marginBottom: 20 }}>
+        {scoreTips.slice(0, 2).map((tip, i) => {
+          const isPhotoTip = tip.text.includes('photos');
+          return (
+            <View key={i} style={{ 
+              width: '100%', 
+              marginBottom: 10, 
+              paddingVertical: 14, 
+              paddingHorizontal: 16, 
+              borderRadius: 12, 
+              backgroundColor: isPhotoTip ? '#fff5f3' : '#f8fafc',
+              borderWidth: 1,
+              borderColor: isPhotoTip ? '#fee2e2' : '#f1f5f9',
+              flexDirection: 'row', 
+              alignItems: 'center' 
+            }}>
+              <View style={{ 
+                width: 32, 
+                height: 32, 
+                borderRadius: 16, 
+                backgroundColor: isPhotoTip ? '#fee2e2' : '#f1f5f9', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                marginRight: 12 
+              }}>
+                <FontAwesome5 name={tip.icon} size={14} color={isPhotoTip ? '#e84118' : '#9ca3af'} />
+              </View>
+              <Text style={{ fontSize: 12, color: isPhotoTip ? '#e84118' : '#4b5563', fontFamily: 'Poppins-SemiBold', flex: 1 }}>
+                {tip.text}
+              </Text>
+            </View>
+          );
+        })}
+      </View>
+    );
+  };
 
   // ============================================================
   // STEP 1
   // ============================================================
   const renderStep1 = () => (
-    <Card>
-      <Text style={s.cardTitle}>What are you listing?</Text>
-      <L t="You are the..." />
-      <View style={s.chips}>
-        {['Owner','Agent / Broker','Builder'].map(t => <Chip key={t} label={t} selected={posterType===t} onPress={()=>setPosterType(t)} />)}
+    <View style={{ paddingHorizontal: 4 }}>
+      <Text style={{ fontSize: 24, fontFamily: 'Poppins-Bold', color: '#000', marginBottom: 30, marginTop: 10 }}>What are you listing?</Text>
+      
+      <Text style={{ fontSize: 14, fontFamily: 'Poppins-Medium', color: '#6b7280', marginBottom: 12 }}>You are the...</Text>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 25 }}>
+        {['Owner','Agent / Broker','Builder'].map(t => {
+          const isSelected = posterType === t;
+          return (
+            <TouchableOpacity key={t} onPress={()=>setPosterType(t)} 
+              style={{
+                borderRadius: 40,
+                paddingHorizontal: 25,
+                paddingVertical: 14,
+                borderWidth: 1,
+                borderColor: isSelected ? '#e84118' : '#e5e7eb',
+                backgroundColor: '#fff'
+              }}>
+              <Text style={{ 
+                fontSize: 14, 
+                fontFamily: isSelected ? 'Poppins-Bold' : 'Poppins-Medium', 
+                color: isSelected ? '#e84118' : '#6b7280' 
+              }}>{t}</Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
-      <L t="Transaction Type" req />
-      <View style={s.chips}>
-        {['For Sale','For Rent','PG / Co-living'].map(t => <Chip key={t} label={t} selected={txType===t} onPress={()=>setTxType(t)} />)}
+
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+        <Text style={{ fontSize: 14, fontFamily: 'Poppins-Medium', color: '#6b7280' }}>Transaction Type</Text>
+        <Text style={{ color: '#ef4444', marginLeft: 4 }}>*</Text>
       </View>
-      <L t="Property Type" req />
-      <View style={s.propGrid}>
-        {PROP_TYPES.map(({ label, icon }) => (
-          <TouchableOpacity key={label} style={[s.propItem, propType===label && s.propItemOn]} onPress={()=>setPropType(label)}>
-            <FontAwesome5 name={icon as any} size={22} color={propType===label ? PRIMARY : MUTED} />
-            <Text style={[s.propLbl, propType===label && { color: PRIMARY, fontFamily: 'Inter-SemiBold' }]}>{label}</Text>
-          </TouchableOpacity>
-        ))}
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 25 }}>
+        {['For Sale','For Rent','PG / Co-living'].map(t => {
+          const isSelected = txType === t;
+          return (
+            <TouchableOpacity key={t} onPress={()=>setTxType(t)} 
+              style={{
+                borderRadius: 40,
+                paddingHorizontal: 25,
+                paddingVertical: 14,
+                borderWidth: 1,
+                borderColor: isSelected ? '#e84118' : '#e5e7eb',
+                backgroundColor: isSelected ? '#e84118' : '#fff'
+              }}>
+              <Text style={{ 
+                fontSize: 14, 
+                fontFamily: 'Poppins-Bold', 
+                color: isSelected ? '#fff' : '#6b7280' 
+              }}>{t}</Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
-    </Card>
+
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15 }}>
+        <Text style={{ fontSize: 14, fontFamily: 'Poppins-Medium', color: '#6b7280' }}>Property Type</Text>
+        <Text style={{ color: '#ef4444', marginLeft: 4 }}>*</Text>
+      </View>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+        {PROP_TYPES.map(({ label, icon }) => {
+          const isSelected = propType === label;
+          return (
+            <TouchableOpacity key={label} style={{ 
+              width: '48%', 
+              paddingVertical: 24, 
+              borderRadius: 20, 
+              borderWidth: isSelected ? 2 : 1, 
+              borderColor: isSelected ? '#e84118' : '#f1f5f9', 
+              backgroundColor: '#fff', 
+              alignItems: 'center',
+              shadowColor: '#000',
+              shadowOpacity: 0.02,
+              shadowRadius: 5,
+              elevation: 1
+            }} onPress={()=>setPropType(label)}>
+              <View style={{ marginBottom: 10 }}>
+                <FontAwesome5 name={icon as any} size={32} color={isSelected ? '#e84118' : '#6b7280'} />
+              </View>
+              <Text style={{ 
+                fontSize: 14, 
+                fontFamily: isSelected ? 'Poppins-Bold' : 'Poppins-Medium', 
+                color: isSelected ? '#e84118' : '#6b7280', 
+                textAlign: 'center' 
+              }}>{label}</Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </View>
   );
 
   // ============================================================
   // STEP 2
   // ============================================================
   const renderStep2 = () => (
-    <>
-      <Card>
-        <Text style={s.cardTitle}>📍 Where is your property?</Text>
-        <L t="State" req />
-        <TouchableOpacity style={s.selectTrigger} onPress={() => setShowStateModal(true)}>
-          <Text style={[s.selectTriggerTxt, !state && { color: MUTED }]}>{state || 'Select State'}</Text>
-          <FontAwesome5 name="chevron-down" size={12} color={MUTED} />
-        </TouchableOpacity>
+    <View style={{ paddingVertical: 8 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, borderBottomWidth: 1, borderBottomColor: BORDER, paddingBottom: 16, marginBottom: 32 }}>
+        <FontAwesome5 name="map-marker-alt" size={20} color={PRIMARY} />
+        <Text style={{ fontSize: 20, fontFamily: 'Poppins-Bold', color: DARK }}>Where is your property?</Text>
+      </View>
 
-        <L t="City" req />
-        <TouchableOpacity 
-          style={[s.selectTrigger, !state && { opacity: 0.5 }]} 
-          onPress={() => state ? setShowCityModal(true) : Alert.alert('Wait', 'Select a state first.')}
-          disabled={!state}
-        >
-          <Text style={[s.selectTriggerTxt, !city && { color: MUTED }]}>{city || 'Select City'}</Text>
-          <FontAwesome5 name="chevron-down" size={12} color={MUTED} />
-        </TouchableOpacity>
+      <Text style={{ fontSize: 14, fontFamily: 'Poppins-Bold', color: MUTED, marginLeft: 4, marginBottom: 8 }}>State *</Text>
+      <TouchableOpacity 
+        style={{ 
+          backgroundColor: BORDER, 
+          borderRadius: 8, 
+          paddingHorizontal: 16, 
+          paddingVertical: 14, 
+          flexDirection: 'row', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          marginBottom: 24
+        }} 
+        onPress={() => setShowStateModal(true)}
+      >
+        <Text style={{ fontSize: 14, fontFamily: 'Poppins-Medium', color: state ? DARK : '#9ca3af' }}>{state || 'Select State'}</Text>
+        <FontAwesome5 name="chevron-down" size={16} color={MUTED} />
+      </TouchableOpacity>
 
-        {city === 'Other' && (
-          <View style={{ marginTop: 12 }}>
-            <L t="Specify City" req />
-            <Inp ph="Type your city name..." val={manualCity} onChange={setManualCity} /> 
-            <Text style={{ fontSize: 11, color: MUTED, marginTop: 4 }}>
-              * We'll use this for your property's location.
-            </Text>
+      <Text style={{ fontSize: 14, fontFamily: 'Poppins-Bold', color: MUTED, marginLeft: 4, marginBottom: 8 }}>City *</Text>
+      <TouchableOpacity 
+        style={{ 
+          backgroundColor: BORDER, 
+          borderRadius: 8, 
+          paddingHorizontal: 16, 
+          paddingVertical: 14, 
+          flexDirection: 'row', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          marginBottom: 24,
+          opacity: state ? 1 : 0.5
+        }} 
+        onPress={() => state ? setShowCityModal(true) : Alert.alert('Wait', 'Select a state first.')}
+        disabled={!state}
+      >
+        <Text style={{ fontSize: 14, fontFamily: 'Poppins-Medium', color: city ? DARK : '#9ca3af' }}>{city || 'Select City'}</Text>
+        <FontAwesome5 name="chevron-down" size={16} color={MUTED} />
+      </TouchableOpacity>
+
+      <Text style={{ fontSize: 14, fontFamily: 'Poppins-Bold', color: MUTED, marginLeft: 4, marginBottom: 8 }}>Locality / Area *</Text>
+      <TextInput 
+        style={{ 
+          backgroundColor: BORDER, 
+          borderRadius: 8, 
+          paddingHorizontal: 16, 
+          paddingVertical: 14, 
+          fontSize: 14, 
+          fontFamily: 'Poppins-Medium', 
+          color: DARK,
+          marginBottom: 24
+        }} 
+        placeholder="e.g. Sector 62, Koramangala" 
+        placeholderTextColor="#9ca3af"
+        value={locality} 
+        onChangeText={setLocality} 
+      />
+
+      <Text style={{ fontSize: 14, fontFamily: 'Poppins-Bold', color: MUTED, marginLeft: 4, marginBottom: 8 }}>Society / Project Name</Text>
+      <TextInput 
+        style={{ 
+          backgroundColor: BORDER, 
+          borderRadius: 8, 
+          paddingHorizontal: 16, 
+          paddingVertical: 14, 
+          fontSize: 14, 
+          fontFamily: 'Poppins-Medium', 
+          color: DARK,
+          marginBottom: 32
+        }} 
+        placeholder="e.g. Prestige Lake Habitat" 
+        placeholderTextColor="#9ca3af"
+        value={society} 
+        onChangeText={setSociety} 
+      />
+
+      <TouchableOpacity 
+        style={{ 
+          borderWidth: 2, 
+          borderColor: '#acadaf', 
+          borderStyle: 'dashed', 
+          borderRadius: 12, 
+          paddingVertical: 16, 
+          flexDirection: 'row', 
+          gap: 12, 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          marginBottom: 48
+        }} 
+        onPress={() => Alert.alert('Coming Soon', 'Map selection will be available in the next update.')}
+      >
+        <FontAwesome5 name="map" size={16} color="#acadaf" />
+        <Text style={{ fontSize: 16, fontFamily: 'Poppins-Bold', color: MUTED }}>Set Location on Map</Text>
+      </TouchableOpacity>
+
+      <View style={{ borderTopWidth: 1, borderTopColor: BORDER, paddingTop: 32 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 16, marginBottom: 32 }}>
+          <View style={{ width: 48, height: 48, borderRadius: 12, backgroundColor: '#fcdadd', alignItems: 'center', justifyContent: 'center' }}>
+            <FontAwesome5 name="bus" size={24} color={PRIMARY} />
           </View>
-        )}
+          <View>
+            <Text style={{ fontSize: 18, fontFamily: 'Poppins-Bold', color: DARK }}>Nearby Distances (Optional)</Text>
+            <Text style={{ fontSize: 14, fontFamily: 'Poppins-Medium', color: MUTED }}>Helps attract serious buyers. Fill in KM distance.</Text>
+          </View>
+        </View>
 
-        <L t="Locality / Area" req />
-        <Inp ph="e.g. Sector 62, Koramangala" val={locality} onChange={setLocality} />
-        <L t="Society / Project Name" /><Inp ph="e.g. Prestige Lake Habitat" val={society} onChange={setSociety} />
-        <Row2>
-          <View style={{ flex: 1 }}><L t="PIN Code" req /><Inp ph="6-digit PIN" val={pin} onChange={setPin} kb="numeric" /></View>
-          <View style={{ flex: 1 }}><L t="Landmark" /><Inp ph="Near Metro, Mall..." val={landmark} onChange={setLandmark} /></View>
-        </Row2>
-        <L t="Full Address" /><Inp ph="House no., Street, Area..." val={address} onChange={setAddress} multi />
-        
-        <TouchableOpacity style={[s.pickBtn, { marginTop: 16, borderStyle: 'solid', backgroundColor: '#f1f5f9', borderColor: BORDER }]} onPress={() => Alert.alert('Coming Soon', 'Map selection will be available in the next update.')}>
-          <FontAwesome5 name="map-marked-alt" size={16} color={DARK} />
-          <Text style={[s.pickBtnTxt, { color: DARK }]}>Set Location on Map</Text>
-        </TouchableOpacity>
-      </Card>
-      <Card>
-        <Text style={s.cardTitle}>🚌 Nearby Distances (Optional)</Text>
-        <Text style={s.helper}>Helps attract serious buyers. Fill in KM distance.</Text>
-        <Row2>
-          <View style={{ flex: 1 }}><L t="Metro Station (km)" /><Inp ph="0.5" val={metroKm} onChange={setMetroKm} kb="decimal-pad" /></View>
-          <View style={{ flex: 1 }}><L t="Schools (km)" /><Inp ph="1.2" val={schoolKm} onChange={setSchoolKm} kb="decimal-pad" /></View>
-        </Row2>
-        <Row2>
-          <View style={{ flex: 1 }}><L t="Shopping Mall (km)" /><Inp ph="2.5" val={mallKm} onChange={setMallKm} kb="decimal-pad" /></View>
-          <View style={{ flex: 1 }}><L t="Hospital (km)" /><Inp ph="1.0" val={hospitalKm} onChange={setHospitalKm} kb="decimal-pad" /></View>
-        </Row2>
-      </Card>
-    </>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 16 }}>
+          {[
+            { label: 'METRO STATION', val: metroKm, set: setMetroKm },
+            { label: 'SCHOOLS', val: schoolKm, set: setSchoolKm },
+            { label: 'SHOPPING MALL', val: mallKm, set: setMallKm },
+            { label: 'HOSPITAL', val: hospitalKm, set: setHospitalKm },
+          ].map((item, i) => (
+            <View key={i} style={{ width: '47.5%', backgroundColor: SURFACE_DIM, borderRadius: 12, padding: 16 }}>
+              <Text style={{ fontSize: 10, fontFamily: 'Poppins-Bold', color: MUTED, textTransform: 'uppercase', marginBottom: 8, letterSpacing: 1 }}>{item.label}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <TextInput 
+                  style={{ fontSize: 18, fontFamily: 'Poppins-Bold', color: DARK, padding: 0, flex: 1 }} 
+                  value={item.val || ''} 
+                  onChangeText={item.set} 
+                  placeholder="0.0"
+                  placeholderTextColor="#9ca3af"
+                  keyboardType="decimal-pad"
+                />
+                <Text style={{ fontSize: 12, fontFamily: 'Poppins-Bold', color: '#acadaf' }}>KM</Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      </View>
+    </View>
   );
 
   // ============================================================
@@ -1146,17 +1403,34 @@ export default function PostPropertyScreen() {
       {renderProgressModal()}
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         {/* Header */}
-        <View style={s.header}>
-          <TouchableOpacity onPress={step > 1 ? prev : () => router.back()} style={s.backBtn}>
-            <FontAwesome5 name="arrow-left" size={16} color={DARK} />
+        <View style={{ 
+          flexDirection: 'row', 
+          alignItems: 'center', 
+          justifyContent: 'space-between', 
+          padding: 16, 
+          backgroundColor: BG, 
+          borderBottomWidth: 1, 
+          borderBottomColor: SURFACE_DIM 
+        }}>
+          <TouchableOpacity onPress={step > 1 ? prev : () => router.back()} style={{ 
+            width: 44, 
+            height: 44, 
+            borderRadius: 22, 
+            alignItems: 'center', 
+            justifyContent: 'center' 
+          }}>
+            <FontAwesome5 name="arrow-left" size={24} color="#FF5A36" />
           </TouchableOpacity>
-          <Text style={s.headerTitle}>Post Property</Text>
-          <View style={{ width: 40 }} />
+          <Text style={{ fontSize: 24, fontFamily: 'Poppins-Bold', color: '#FF5A36' }}>Post Property</Text>
+          <TouchableOpacity style={{ width: 44, alignItems: 'center' }}>
+            <FontAwesome5 name="ellipsis-v" size={18} color={DARK} />
+          </TouchableOpacity>
         </View>
 
         {renderStepBar()}
 
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: 32 }} keyboardShouldPersistTaps="handled">
+          {renderScoreTips()}
           {step === 1 && renderStep1()}
           {step === 2 && renderStep2()}
           {step === 3 && renderStep3()}
@@ -1184,16 +1458,59 @@ export default function PostPropertyScreen() {
         />
 
         {/* Footer */}
-        <View style={s.footer}>
+        <View style={{ 
+          padding: 24, 
+          paddingBottom: Platform.OS === 'ios' ? 44 : 32,
+          backgroundColor: '#fff', 
+          borderTopWidth: 1, 
+          borderTopColor: BORDER,
+          flexDirection: 'row', 
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          shadowColor: '#000',
+          shadowOpacity: 0.06,
+          shadowRadius: 10,
+          elevation: 4
+        }}>
+          <TouchableOpacity onPress={step > 1 ? prev : () => router.back()}>
+            <Text style={{ fontSize: 16, fontFamily: 'Poppins-Bold', color: DARK }}>Back</Text>
+          </TouchableOpacity>
+
           {step < 5 ? (
-            <TouchableOpacity style={s.nextBtn} onPress={next}>
-              <Text style={s.nextTxt}>Next: {LABELS[step]}</Text>
-              <FontAwesome5 name="arrow-right" size={13} color="#fff" />
+            <TouchableOpacity style={{ 
+              backgroundColor: PRIMARY, 
+              borderRadius: 16, 
+              paddingVertical: 18, 
+              paddingHorizontal: 40,
+              flexDirection: 'row', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              gap: 12,
+              shadowColor: PRIMARY,
+              shadowOpacity: 0.2,
+              shadowRadius: 10,
+              elevation: 4
+            }} onPress={next}>
+              <Text style={{ fontSize: 16, fontFamily: 'Poppins-Bold', color: '#fff' }}>Next: {LABELS[step]}</Text>
+              <FontAwesome5 name="arrow-right" size={16} color="#fff" />
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity style={[s.nextBtn, { backgroundColor: '#16a34a' }]} onPress={submit} disabled={submitting}>
+            <TouchableOpacity style={{ 
+              backgroundColor: '#16a34a', 
+              borderRadius: 16, 
+              paddingVertical: 18, 
+              paddingHorizontal: 40,
+              flexDirection: 'row', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              gap: 12,
+              shadowColor: '#16a34a',
+              shadowOpacity: 0.2,
+              shadowRadius: 10,
+              elevation: 4
+            }} onPress={submit} disabled={submitting}>
               {submitting ? <ActivityIndicator color="#fff" /> :
-                <><FontAwesome5 name="rocket" size={14} color="#fff" /><Text style={s.nextTxt}>Post Property FREE</Text></>}
+                <><FontAwesome5 name="rocket" size={14} color="#fff" /><Text style={{ fontSize: 16, fontFamily: 'Poppins-Bold', color: '#fff' }}>POST PROPERTY FREE</Text></>}
             </TouchableOpacity>
           )}
         </View>
